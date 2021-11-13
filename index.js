@@ -47,7 +47,7 @@ async function run() {
             const product = await productsCollection.findOne(query)
             res.json(product)
         })
-        app.delete('/dltProducts/:id', async (req, res) => {
+        app.delete('/dltProducts/:orderId', async (req, res) => {
             const id = req.params.id;
             console.log(id)
             const query = { _id: ObjectId(id) }
@@ -148,12 +148,13 @@ async function run() {
 
         app.post('/users', async (req, res) => {
             const user = req.body;
+            user.role = "user";
             const result = await usersCollection.insertOne(user)
             console.log(result)
             res.json(result)
         })
         app.put('/users', async (req, res) => {
-            const user = req.body;
+            const user = req.body.user;
 
             const filter = { email: user.email }
             const options = { upsert: true }
@@ -167,10 +168,11 @@ async function run() {
 
         app.put('/users/admin', async (req, res) => {
             const user = req.body;
-            console.log('put', req.headers.authorization)
+            console.log('put', user.email)
             const filter = { email: user.email }
             const updateDoc = { $set: { role: 'admin' } }
             const result = await usersCollection.updateOne(filter, updateDoc)
+            console.log(result)
             res.json(result)
         })
 
